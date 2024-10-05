@@ -8,6 +8,12 @@ public class PlayerCam : MonoBehaviour
     public float sensY = 100f;
     public float smoothing = 5f;
 
+    public float maxFovMultiplier = 1.5f;
+    public float minFovMultiplier = 1f;
+
+    public float minSpeed = 10f;
+    public float maxSpeed = 40f;
+
     public Transform orientation;
     public Transform camHolder;
 
@@ -18,6 +24,9 @@ public class PlayerCam : MonoBehaviour
 
     private CinemachineCamera cam;
     private float originalFov;
+    private float fovMultiplier = 1f; // New field to store FOV multiplier
+
+    Rigidbody playerRb;
 
     private void Start()
     {
@@ -25,6 +34,7 @@ public class PlayerCam : MonoBehaviour
         Cursor.visible = false;
         cam = GetComponent<CinemachineCamera>();
         originalFov = cam.Lens.FieldOfView;
+        playerRb = orientation.GetComponent<Rigidbody>();
     }
 
     private void Update()
@@ -52,16 +62,21 @@ public class PlayerCam : MonoBehaviour
         // Rotate cam and orientation
         camHolder.rotation = Quaternion.Euler(xRotation, yRotation, 0);
         orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+
+        // Lerp FOV based on Rigidbody speed
+        float speed = playerRb.linearVelocity.magnitude;
+        float speedNormalized = Mathf.InverseLerp(minSpeed, maxSpeed, speed);
+        float targetFovMultiplier = Mathf.Lerp(minFovMultiplier, maxFovMultiplier, speedNormalized);
+        cam.Lens.FieldOfView = Mathf.Lerp(
+            cam.Lens.FieldOfView,
+            originalFov * targetFovMultiplier * fovMultiplier, // Apply the combined multiplier
+            Time.deltaTime * smoothing
+        );
     }
 
     public void DoFov(float mult)
     {
-        DOTween.To(
-            () => cam.Lens.FieldOfView,
-            x => cam.Lens.FieldOfView = x,
-            originalFov * mult,
-            0.25f
-        );
+        DOTween.To(() => fovMultiplier, x => fovMultiplier = x, mult, 0.25f);
     }
 
     public void DoTilt(float zTilt)
