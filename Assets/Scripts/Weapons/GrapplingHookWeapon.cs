@@ -13,7 +13,7 @@ public class GrapplingWeapon : CoreWeapon
     public PlayerMovement pm;
 
     [Header("Swinging")]
-    private float maxSwingDistance = 25f;
+    public float maxSwingDistance = 25f;
     private Vector3 swingPoint;
     private SpringJoint joint;
 
