@@ -28,6 +28,12 @@ public class PlayerCam : MonoBehaviour
 
     Rigidbody playerRb;
 
+    public void SetNewRotation(float newRotX, float newRotY)
+    {
+        Debug.Log("SetNewRotation");
+        xRotation = newRotX; yRotation = newRotY;
+    }
+
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;

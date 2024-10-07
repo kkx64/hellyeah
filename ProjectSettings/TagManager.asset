@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - PortalRight
+  - PortalLeft
   layers:
   - Default
   - TransparentFX
@@ -18,8 +20,8 @@ TagManager:
   - Enemy
   - EnemyProjectile
   - GrapplePoint
-  - 
-  - 
+  - RightPortal
+  - LeftPortal
   - 
   - 
   - 
