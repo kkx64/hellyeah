@@ -28,11 +28,6 @@ public class PlayerCam : MonoBehaviour
 
     Rigidbody playerRb;
 
-    public void SetNewRotation(float newRotX, float newRotY)
-    {
-        Debug.Log("SetNewRotation");
-        xRotation = newRotX; yRotation = newRotY;
-    }
 
     private void Start()
     {
@@ -88,5 +83,11 @@ public class PlayerCam : MonoBehaviour
     public void DoTilt(float zTilt)
     {
         DOTween.To(() => cam.Lens.Dutch, x => cam.Lens.Dutch = x, zTilt, 0.25f);
+    }
+
+    public void SetNewRotation(float newRotX, float newRotY)
+    {
+        xRotation = newRotX;
+        yRotation = newRotY;
     }
 }
