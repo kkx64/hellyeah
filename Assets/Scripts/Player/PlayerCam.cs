@@ -29,6 +29,7 @@ public class PlayerCam : MonoBehaviour
 
     Rigidbody playerRb;
 
+
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
@@ -85,6 +86,12 @@ public class PlayerCam : MonoBehaviour
         DOTween.To(() => cam.Lens.Dutch, x => cam.Lens.Dutch = x, zTilt, 0.25f);
     }
 
+
+    public void SetNewRotation(float newRotX, float newRotY)
+    {
+        xRotation = newRotX;
+        yRotation = newRotY;
+
     public void DoShake(float intensity, float duration)
     {
         var perlin =
@@ -96,5 +103,6 @@ public class PlayerCam : MonoBehaviour
         // Reset shake after duration
         DOTween.To(() => perlin.AmplitudeGain, x => perlin.AmplitudeGain = x, 0, duration);
         DOTween.To(() => perlin.FrequencyGain, x => perlin.FrequencyGain = x, 0, duration);
+
     }
 }
