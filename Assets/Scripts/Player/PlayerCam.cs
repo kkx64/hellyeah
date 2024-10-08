@@ -91,6 +91,7 @@ public class PlayerCam : MonoBehaviour
     {
         xRotation = newRotX;
         yRotation = newRotY;
+    }
 
     public void DoShake(float intensity, float duration)
     {
