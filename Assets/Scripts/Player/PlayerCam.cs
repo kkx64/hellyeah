@@ -6,7 +6,8 @@ public class PlayerCam : MonoBehaviour
 {
     public float sensX = 100f;
     public float sensY = 100f;
-    public float smoothing = 5f;
+    public float lookSmoothing = 5f;
+    public float fovSmoothing = 5f;
 
     public float maxFovMultiplier = 1.5f;
     public float minFovMultiplier = 1f;
@@ -48,7 +49,7 @@ public class PlayerCam : MonoBehaviour
             currentMouseDelta,
             targetMouseDelta,
             ref currentMouseDeltaVelocity,
-            smoothing * Time.deltaTime
+            lookSmoothing * Time.deltaTime
         );
 
         // Apply sensitivity
@@ -70,7 +71,7 @@ public class PlayerCam : MonoBehaviour
         cam.Lens.FieldOfView = Mathf.Lerp(
             cam.Lens.FieldOfView,
             originalFov * targetFovMultiplier * fovMultiplier, // Apply the combined multiplier
-            Time.deltaTime * smoothing
+            Time.deltaTime * fovSmoothing
         );
     }
 
@@ -82,5 +83,18 @@ public class PlayerCam : MonoBehaviour
     public void DoTilt(float zTilt)
     {
         DOTween.To(() => cam.Lens.Dutch, x => cam.Lens.Dutch = x, zTilt, 0.25f);
+    }
+
+    public void DoShake(float intensity, float duration)
+    {
+        var perlin =
+            cam.GetCinemachineComponent(CinemachineCore.Stage.Noise)
+            as CinemachineBasicMultiChannelPerlin;
+        perlin.AmplitudeGain = intensity;
+        perlin.FrequencyGain = intensity * 4;
+
+        // Reset shake after duration
+        DOTween.To(() => perlin.AmplitudeGain, x => perlin.AmplitudeGain = x, 0, duration);
+        DOTween.To(() => perlin.FrequencyGain, x => perlin.FrequencyGain = x, 0, duration);
     }
 }

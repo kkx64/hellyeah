@@ -78,17 +78,22 @@ public class PlayerMovement : MonoBehaviour
 
     public bool activeGrapple;
     public bool swinging;
-    public float grappleFov = 1.1f;
 
     public TextMeshProUGUI text_speed;
     public TextMeshProUGUI text_mode;
 
     PlayerCam playerCam;
+    PlayerStamina playerStamina;
 
-    [Header("FOV Settings")]
-    public float defaultFov = 1f;
-    public float sprintFov = 1.15f;
-    public float slideFov = 1.15f;
+    [Header("State Multipliers")]
+    public float walkingMultiplier = 1f;
+    public float sprintingMultiplier = 1f;
+    public float wallrunningMultiplier = 1f;
+    public float crouchingMultiplier = 1f;
+    public float slidingMultiplier = 1f;
+    public float airMultiplierState = 1f;
+    public float grapplingMultiplier = 1f;
+    public float swingingMultiplier = 1f;
 
     private void Start()
     {
@@ -99,10 +104,12 @@ public class PlayerMovement : MonoBehaviour
 
         startYScale = transform.localScale.y;
         playerCam = FindAnyObjectByType<PlayerCam>();
+        playerStamina = GetComponent<PlayerStamina>();
     }
 
     private void Update()
     {
+        bool prevGrounded = grounded;
         // ground check
         grounded = Physics.Raycast(
             transform.position,
@@ -110,6 +117,11 @@ public class PlayerMovement : MonoBehaviour
             playerHeight * 0.5f + 0.2f,
             whatIsGround
         );
+
+        if (grounded && !prevGrounded)
+        {
+            playerCam.DoShake(rb.linearVelocity.y / 5f, 0.2f);
+        }
 
         MyInput();
         SpeedControl();
@@ -180,7 +192,6 @@ public class PlayerMovement : MonoBehaviour
         // Mode - Swinging
         else if (swinging)
         {
-            playerCam.DoFov(grappleFov);
             state = MovementState.swinging;
             moveSpeed = swingSpeed;
         }
@@ -193,7 +204,6 @@ public class PlayerMovement : MonoBehaviour
         // Mode - Sliding
         else if (sliding)
         {
-            playerCam.DoFov(slideFov);
             state = MovementState.sliding;
 
             // increase speed by one every second
@@ -205,28 +215,32 @@ public class PlayerMovement : MonoBehaviour
         // Mode - Crouching
         else if (crouching)
         {
-            playerCam.DoFov(defaultFov);
             state = MovementState.crouching;
             desiredMoveSpeed = crouchSpeed;
         }
         // Mode - Sprinting
-        else if (grounded && Input.GetKey(sprintKey))
+        else if (
+            grounded
+            && Input.GetKey(sprintKey)
+            && !playerStamina.IsRegenerating()
+            && playerStamina.HasStamina(0.1f)
+        )
         {
-            playerCam.DoFov(sprintFov);
-            state = MovementState.sprinting;
-            desiredMoveSpeed = sprintSpeed;
+            if (playerStamina.UseStamina(Time.deltaTime * playerStamina.staminaDepletionRate))
+            {
+                state = MovementState.sprinting;
+                desiredMoveSpeed = sprintSpeed;
+            }
         }
         // Mode - Walking
         else if (grounded)
         {
-            playerCam.DoFov(defaultFov);
             state = MovementState.walking;
             desiredMoveSpeed = walkSpeed;
         }
         // Mode - Air
         else
         {
-            playerCam.DoFov(defaultFov);
             moveSpeed = 100f;
             state = MovementState.air;
         }
@@ -242,6 +256,11 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             moveSpeed = desiredMoveSpeed;
+        }
+
+        if (grounded && state == MovementState.air)
+        {
+            playerCam.DoShake(rb.linearVelocity.magnitude / 5f, 0.2f);
         }
 
         lastDesiredMoveSpeed = desiredMoveSpeed;
@@ -270,7 +289,38 @@ public class PlayerMovement : MonoBehaviour
                     * slopeAngleIncrease;
             }
             else
-                time += Time.deltaTime * speedIncreaseMultiplier;
+            {
+                var multiplier = 1f;
+                switch (state)
+                {
+                    case MovementState.walking:
+                        multiplier = walkingMultiplier;
+                        break;
+                    case MovementState.sprinting:
+                        multiplier = sprintingMultiplier;
+                        break;
+                    case MovementState.wallrunning:
+                        multiplier = wallrunningMultiplier;
+                        break;
+                    case MovementState.crouching:
+                        multiplier = crouchingMultiplier;
+                        break;
+                    case MovementState.sliding:
+                        multiplier = slidingMultiplier;
+                        break;
+                    case MovementState.air:
+                        multiplier = airMultiplierState;
+                        break;
+                    case MovementState.grappling:
+                        multiplier = grapplingMultiplier;
+                        break;
+                    case MovementState.swinging:
+                        multiplier = swingingMultiplier;
+                        break;
+                }
+
+                time += Time.deltaTime * speedIncreaseMultiplier * multiplier;
+            }
 
             yield return null;
         }
@@ -393,14 +443,11 @@ public class PlayerMovement : MonoBehaviour
     {
         enableMovementOnNextTouch = true;
         rb.linearVelocity = velocityToSet;
-
-        playerCam.DoFov(grappleFov);
     }
 
     public void ResetRestrictions()
     {
         activeGrapple = false;
-        playerCam.DoFov(defaultFov);
     }
 
     public Vector3 CalculateJumpVelocity(
