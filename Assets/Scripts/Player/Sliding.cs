@@ -14,6 +14,7 @@ public class Sliding : MonoBehaviour
     public float maxSlideTime;
     public float slideForce;
     private float slideTimer;
+    public float staminaCost = 20f;
 
     public float slideYScale;
     private float startYScale;
@@ -23,16 +24,19 @@ public class Sliding : MonoBehaviour
     public KeyCode slideKey = KeyCode.LeftControl;
     private float horizontalInput;
     private float verticalInput;
+    public float strafeMultiplier = 0.75f;
 
     [Header("Cooldown")]
     public float slideCooldown = 2f; // Cooldown duration in seconds
     private float cooldownTimer;
 
+    PlayerStamina playerStamina;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         pm = GetComponent<PlayerMovement>();
-
+        playerStamina = GetComponent<PlayerStamina>();
         startYScale = playerObj.localScale.y;
     }
 
@@ -50,6 +54,7 @@ public class Sliding : MonoBehaviour
             Input.GetKeyDown(slideKey)
             && (horizontalInput != 0 || verticalInput != 0)
             && cooldownTimer <= 0
+            && playerStamina.HasStamina(staminaCost)
         )
         {
             StartSlide();
@@ -76,7 +81,10 @@ public class Sliding : MonoBehaviour
             return;
         }
 
+        Debug.Log("Start Slide");
+
         pm.sliding = true;
+        playerStamina.UseStamina(staminaCost);
 
         StartCoroutine(LerpScale(playerObj.localScale.y, slideYScale, 0.2f));
         rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);

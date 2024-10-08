@@ -46,6 +46,9 @@ public class WallRunningAdvanced : MonoBehaviour
     private PlayerMovement pm;
     private Rigidbody rb;
 
+    [Header("Tilt")]
+    public float tilt = 5f;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -147,9 +150,9 @@ public class WallRunningAdvanced : MonoBehaviour
         // apply camera effects
         // cam.DoFov(1.1f);
         if (wallLeft)
-            cam.DoTilt(-5f);
+            cam.DoTilt(-tilt);
         if (wallRight)
-            cam.DoTilt(5f);
+            cam.DoTilt(tilt);
     }
 
     private void WallRunningMovement()
