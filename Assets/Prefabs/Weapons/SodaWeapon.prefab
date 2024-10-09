@@ -48,6 +48,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rightHand: 0
+  currentAmmo: 1
+  maxAmmo: 1
+  weaponName: Soda
+  ammoRefillAmount: 1
   projectilePrefab: {fileID: 3980782618872373019, guid: a83ed938cd3334088a0cbeac1cab3de9, type: 3}
   animator: {fileID: 1820871275058388274}
   firePoint: {fileID: 7817184514684587926}
@@ -165,7 +169,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b67b5884f53114dfbae0dc2024b55397, type: 2}
+  - {fileID: 2100000, guid: de50eb81389ed4a79ac27662db127ceb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

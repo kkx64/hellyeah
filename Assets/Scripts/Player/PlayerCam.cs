@@ -27,8 +27,11 @@ public class PlayerCam : MonoBehaviour
     private float originalFov;
     private float fovMultiplier = 1f; // New field to store FOV multiplier
 
-    Rigidbody playerRb;
+    public NoiseSettings noiseSettings;
 
+    Rigidbody playerRb;
+    PlayerMovement playerMovement;
+    CinemachineBasicMultiChannelPerlin noise;
 
     private void Start()
     {
@@ -37,6 +40,10 @@ public class PlayerCam : MonoBehaviour
         cam = GetComponent<CinemachineCamera>();
         originalFov = cam.Lens.FieldOfView;
         playerRb = orientation.GetComponent<Rigidbody>();
+        playerMovement = orientation.GetComponent<PlayerMovement>();
+        noise =
+            cam.GetCinemachineComponent(CinemachineCore.Stage.Noise)
+            as CinemachineBasicMultiChannelPerlin;
     }
 
     private void Update()
@@ -74,6 +81,48 @@ public class PlayerCam : MonoBehaviour
             originalFov * targetFovMultiplier * fovMultiplier, // Apply the combined multiplier
             Time.deltaTime * fovSmoothing
         );
+
+        if (
+            playerMovement.state != PlayerMovement.MovementState.wallrunning
+            && playerMovement.state != PlayerMovement.MovementState.air
+        )
+        {
+            // Add lean when turning and running left and right
+            float leanAmount = Mathf.Lerp(0, 10, speedNormalized); // Adjust the lean amount as needed
+            if (Input.GetKey(KeyCode.A))
+            {
+                DoTilt(leanAmount, 0.2f);
+            }
+            else if (Input.GetKey(KeyCode.D))
+            {
+                DoTilt(-leanAmount, 0.2f);
+            }
+            else
+            {
+                DoTilt(0, 0.2f);
+            }
+        }
+
+        if (noise != null)
+        {
+            float shakeIntensity = Mathf.Lerp(0, 1, speedNormalized); // Adjust the range as needed
+            if (
+                playerMovement.state == PlayerMovement.MovementState.sprinting
+                || playerMovement.state == PlayerMovement.MovementState.walking
+            )
+            {
+                noiseSettings.PositionNoise[0].Y.Amplitude = shakeIntensity;
+                noiseSettings.PositionNoise[0].X.Amplitude = shakeIntensity;
+            }
+            else
+            {
+                noiseSettings.PositionNoise[0].Y.Amplitude = 0;
+                noiseSettings.PositionNoise[0].X.Amplitude = 0;
+            }
+
+            noise.AmplitudeGain = shakeIntensity;
+            noise.FrequencyGain = shakeIntensity * 4;
+        }
     }
 
     public void DoFov(float mult)
@@ -81,11 +130,10 @@ public class PlayerCam : MonoBehaviour
         DOTween.To(() => fovMultiplier, x => fovMultiplier = x, mult, 0.25f);
     }
 
-    public void DoTilt(float zTilt)
+    public void DoTilt(float zTilt, float tiltSpeed = 0.25f)
     {
-        DOTween.To(() => cam.Lens.Dutch, x => cam.Lens.Dutch = x, zTilt, 0.25f);
+        DOTween.To(() => cam.Lens.Dutch, x => cam.Lens.Dutch = x, zTilt, tiltSpeed);
     }
-
 
     public void SetNewRotation(float newRotX, float newRotY)
     {
@@ -104,6 +152,5 @@ public class PlayerCam : MonoBehaviour
         // Reset shake after duration
         DOTween.To(() => perlin.AmplitudeGain, x => perlin.AmplitudeGain = x, 0, duration);
         DOTween.To(() => perlin.FrequencyGain, x => perlin.FrequencyGain = x, 0, duration);
-
     }
 }

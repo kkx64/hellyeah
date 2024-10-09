@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -95,6 +96,12 @@ public class PlayerMovement : MonoBehaviour
     public float grapplingMultiplier = 1f;
     public float swingingMultiplier = 1f;
 
+    [Header("Attacks")]
+    public float slideKickForce = 10f;
+    public int minSlideKickDamage = 10;
+    public int maxSlideKickDamage = 20;
+    public float knockbackPower = 2f;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -109,7 +116,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        bool prevGrounded = grounded;
         // ground check
         grounded = Physics.Raycast(
             transform.position,
@@ -117,11 +123,6 @@ public class PlayerMovement : MonoBehaviour
             playerHeight * 0.5f + 0.2f,
             whatIsGround
         );
-
-        if (grounded && !prevGrounded)
-        {
-            playerCam.DoShake(rb.linearVelocity.y / 5f, 0.2f);
-        }
 
         MyInput();
         SpeedControl();
@@ -183,6 +184,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void StateHandler()
     {
+        if (grounded && state == MovementState.air)
+        {
+            playerCam.DoShake(rb.linearVelocity.magnitude / 5f, 0.2f);
+        }
         // Mode - Wallrunning
         if (wallrunning)
         {
@@ -256,11 +261,6 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             moveSpeed = desiredMoveSpeed;
-        }
-
-        if (grounded && state == MovementState.air)
-        {
-            playerCam.DoShake(rb.linearVelocity.magnitude / 5f, 0.2f);
         }
 
         lastDesiredMoveSpeed = desiredMoveSpeed;
@@ -493,5 +493,33 @@ public class PlayerMovement : MonoBehaviour
     {
         float mult = Mathf.Pow(10.0f, (float)digits);
         return Mathf.Round(value * mult) / mult;
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (!grounded && sliding)
+        {
+            var enemy = collision.gameObject.GetComponent<CoreEnemy>();
+            if (enemy != null)
+            {
+                int slideKickDamage = Mathf.RoundToInt(
+                    Mathf.Lerp(
+                        minSlideKickDamage,
+                        maxSlideKickDamage,
+                        rb.linearVelocity.magnitude / slideSpeed
+                    )
+                );
+                enemy.TakeDamage(slideKickDamage);
+                var enemyDirection = (enemy.transform.position - transform.position).normalized;
+                if (enemy.GetType() == typeof(GroundEnemy))
+                    // Apply force if the enemy is a GroundEnemy
+                    ((GroundEnemy)enemy).ApplyRigidbodyForce(enemyDirection * slideKickForce);
+                // Bounce player upwards and back
+                Vector3 bounceDirection = -enemyDirection;
+                bounceDirection.y = 0.5f;
+                rb.AddForce(-rb.linearVelocity, ForceMode.Impulse);
+                rb.AddForce(bounceDirection * knockbackPower, ForceMode.Impulse);
+            }
+        }
     }
 }

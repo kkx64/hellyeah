@@ -6,18 +6,16 @@ public class ThrowWeapon : CoreWeapon
     public GameObject projectilePrefab;
     public Animator animator;
     public Transform firePoint;
-    public float chargeTime = 1f; // Time needed to hold before fully charged
+    public float chargeTime = 1f;
     public float projectileForce = 1000f;
     public float reloadTime = 1f;
+    public float fireDelay = 0f;
+    public Vector3 randomThrowAngularVelocity = new Vector3(0, 0, 0);
 
     private bool isReloading = false;
     private bool isReadyToFire = true;
     private float chargeStartTime;
     private bool isCharging = false;
-
-    public float fireDelay = 0f;
-
-    public Vector3 randomThrowAngularVelocity = new Vector3(0, 0, 0);
 
     private void Update()
     {
@@ -26,17 +24,17 @@ public class ThrowWeapon : CoreWeapon
 
     private void HandleFiring()
     {
-        if (isReadyToFire && !isReloading)
+        if (isReadyToFire && !isReloading && currentAmmo > 0)
         {
-            if (Input.GetButtonDown(fireKey.ToString()))
+            if (Input.GetButtonDown(fireKey))
             {
                 StartCharging();
             }
-            else if (Input.GetButton(fireKey.ToString()))
+            else if (Input.GetButton(fireKey))
             {
                 ContinueCharging();
             }
-            else if (Input.GetButtonUp(fireKey.ToString()))
+            else if (Input.GetButtonUp(fireKey))
             {
                 ReleaseFire();
             }
@@ -81,19 +79,25 @@ public class ThrowWeapon : CoreWeapon
         isReadyToFire = false;
         animator.SetTrigger("Fire");
         yield return new WaitForSeconds(fireDelay);
-        GameObject projectile = Instantiate(
-            projectilePrefab,
-            firePoint.position,
-            firePoint.rotation
-        );
-        Rigidbody rb = projectile.GetComponent<Rigidbody>();
-        float force = fullyCharged ? projectileForce * 1.5f : projectileForce;
-        rb.angularVelocity = new Vector3(
-            Random.Range(-randomThrowAngularVelocity.x, randomThrowAngularVelocity.x),
-            Random.Range(-randomThrowAngularVelocity.y, randomThrowAngularVelocity.y),
-            Random.Range(-randomThrowAngularVelocity.z, randomThrowAngularVelocity.z)
-        );
-        rb.AddForce(firePoint.forward * force);
+
+        if (UseAmmo())
+        {
+            GameObject projectile = Instantiate(
+                projectilePrefab,
+                firePoint.position,
+                firePoint.rotation
+            );
+            Rigidbody rb = projectile.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.AddForce(firePoint.forward * projectileForce);
+                rb.angularVelocity = new Vector3(
+                    Random.Range(-randomThrowAngularVelocity.x, randomThrowAngularVelocity.x),
+                    Random.Range(-randomThrowAngularVelocity.y, randomThrowAngularVelocity.y),
+                    Random.Range(-randomThrowAngularVelocity.z, randomThrowAngularVelocity.z)
+                );
+            }
+        }
 
         StartCoroutine(Reload());
     }
@@ -109,5 +113,21 @@ public class ThrowWeapon : CoreWeapon
         animator.SetBool("Reloading", false);
         isReloading = false;
         isReadyToFire = true;
+    }
+
+    public override bool UseAmmo()
+    {
+        if (base.UseAmmo())
+        {
+            // Additional logic for using ammo can be added here if needed
+            return true;
+        }
+        return false;
+    }
+
+    public override void RefillAmmo()
+    {
+        base.RefillAmmo();
+        // Additional logic for refilling ammo can be added here if needed
     }
 }

@@ -10678,7 +10678,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensX: 250
   sensY: 250
-  smoothing: 3
+  lookSmoothing: 5
+  fovSmoothing: 5
   maxFovMultiplier: 1.2
   minFovMultiplier: 1
   minSpeed: 0
@@ -11073,12 +11074,16 @@ MonoBehaviour:
   freeze: 0
   activeGrapple: 0
   swinging: 0
-  grappleFov: 1.1
   text_speed: {fileID: 0}
   text_mode: {fileID: 0}
-  defaultFov: 1
-  sprintFov: 1.1
-  slideFov: 1.1
+  walkingMultiplier: 1
+  sprintingMultiplier: 1
+  wallrunningMultiplier: 1
+  crouchingMultiplier: 1
+  slidingMultiplier: 1
+  airMultiplierState: 1
+  grapplingMultiplier: 1
+  swingingMultiplier: 1
 --- !u!136 &5467285084084769581
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -11135,6 +11140,7 @@ MonoBehaviour:
   gravityCounterForce: 20
   orientation: {fileID: 5467285084084769577}
   cam: {fileID: 2078484556}
+  tilt: 5
 --- !u!114 &5467285084084769583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11151,9 +11157,11 @@ MonoBehaviour:
   playerObj: {fileID: 5467285084084769577}
   maxSlideTime: 0.6
   slideForce: 800
+  staminaCost: 20
   slideYScale: 0.5
   scaleLerpTime: 0.3
   slideKey: 306
+  strafeMultiplier: 0.75
   slideCooldown: 3
 --- !u!1 &5467285084381530827
 GameObject:
@@ -11409,7 +11417,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1886784254766869546, guid: c1fcf15ba107cd643ab1418dc70f09ea, type: 3}
       propertyPath: m_Center.z
-      value: 3
+      value: -1.83
       objectReference: {fileID: 0}
     - target: {fileID: 2083698513340808137, guid: c1fcf15ba107cd643ab1418dc70f09ea, type: 3}
       propertyPath: otherPortal
@@ -11664,7 +11672,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5854174607520732228, guid: 634638b36b44652459909447356b9b4c, type: 3}
       propertyPath: m_Center.z
-      value: 3
+      value: -1.95
       objectReference: {fileID: 0}
     - target: {fileID: 5864460219846279587, guid: 634638b36b44652459909447356b9b4c, type: 3}
       propertyPath: otherPortal

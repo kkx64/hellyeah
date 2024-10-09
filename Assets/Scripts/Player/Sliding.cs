@@ -81,8 +81,6 @@ public class Sliding : MonoBehaviour
             return;
         }
 
-        Debug.Log("Start Slide");
-
         pm.sliding = true;
         playerStamina.UseStamina(staminaCost);
 

@@ -4890,7 +4890,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b67b5884f53114dfbae0dc2024b55397, type: 2}
+  - {fileID: 2100000, guid: de50eb81389ed4a79ac27662db127ceb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5007,12 +5007,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rightHand: 1
+  currentAmmo: 3
+  maxAmmo: 3
+  weaponName: Cigarettes
+  ammoRefillAmount: 3
   projectilePrefab: {fileID: 3980782618872373019, guid: 7bd8ca595f6fb4818b0cfca243036eea, type: 3}
   animator: {fileID: 5611676201884596328}
-  firePoint: {fileID: 0}
+  firePoint: {fileID: 6032496025955379406}
   chargeTime: 1
   projectileForce: 3400
-  reloadTime: 1
+  reloadTime: 3
   fireDelay: 0
   randomThrowAngularVelocity: {x: 0, y: 0, z: 0}
 --- !u!1 &8012633388947281738

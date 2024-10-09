@@ -4953,6 +4953,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1316325336091980333}
   - component: {fileID: 127065892789906917}
+  - component: {fileID: -2547881698729271123}
   m_Layer: 9
   m_Name: CIgaretteProjectile
   m_TagString: Untagged
@@ -5005,6 +5006,23 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 2
+--- !u!114 &-2547881698729271123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3980782618872373019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7bc794356c9a45788b6e84cc86e5095, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 20
+  lifetime: 5
+  speed: 40
+  randomizeAngularVelocity: 0
+  destroyOnHit: 0
 --- !u!1 &6056854839203952675
 GameObject:
   m_ObjectHideFlags: 0
