@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class BareHandsWeapon : CoreWeapon
@@ -11,9 +9,8 @@ public class BareHandsWeapon : CoreWeapon
     public float punchRadius = 1f;
     public int punchDamage = 10;
     public LayerMask punchableLayers;
-
     private bool canPunch = true;
-    private Animator animator; // Assuming you have an animator
+    private Animator animator;
 
     void Start()
     {
@@ -22,18 +19,20 @@ public class BareHandsWeapon : CoreWeapon
 
     void Update()
     {
-        if (Input.GetButtonDown(fireKey) && canPunch)
+        if (Input.GetButtonDown(fireKey))
         {
-            StartCoroutine(Punch());
+            if (canPunch)
+            {
+                StartCoroutine(Punch());
+            }
         }
     }
 
     IEnumerator Punch()
     {
         canPunch = false;
-        animator.SetTrigger("Punch"); // Trigger punch animation
+        animator.SetTrigger("Punch");
 
-        // Perform punch logic
         Vector3 punchOrigin = transform.position + transform.forward * punchRange / 2f;
         RaycastHit[] hits = Physics.SphereCastAll(
             punchOrigin,
@@ -45,7 +44,6 @@ public class BareHandsWeapon : CoreWeapon
 
         foreach (RaycastHit hit in hits)
         {
-            // Push rigidbodies
             Rigidbody rb = hit.collider.GetComponent<Rigidbody>();
             if (rb != null)
             {
@@ -59,7 +57,6 @@ public class BareHandsWeapon : CoreWeapon
                 }
             }
 
-            // Damage enemies
             CoreEnemy enemy = hit.collider.GetComponent<CoreEnemy>();
             if (enemy != null)
             {
@@ -67,12 +64,10 @@ public class BareHandsWeapon : CoreWeapon
             }
         }
 
-        // Cooldown
         yield return new WaitForSeconds(punchCooldown);
         canPunch = true;
     }
 
-    // Optional: Visualize the punch area in the editor
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

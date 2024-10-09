@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class CoreWeapon : MonoBehaviour
 {
+    string leftHandFireKey = "Fire1";
+    string rightHandFireKey = "Fire2";
+
     public bool rightHand = true;
     protected string fireKey = "Fire1";
     public int currentAmmo = 0;
@@ -11,16 +14,13 @@ public class CoreWeapon : MonoBehaviour
 
     void Awake()
     {
-        if (rightHand == false)
-        {
-            fireKey = "Fire2";
-        }
+        fireKey = rightHand ? rightHandFireKey : leftHandFireKey;
     }
 
     public void SetHand(bool isRightHand)
     {
         rightHand = isRightHand;
-        fireKey = isRightHand ? "Fire1" : "Fire2";
+        fireKey = isRightHand ? rightHandFireKey : leftHandFireKey;
     }
 
     public virtual bool UseAmmo()
