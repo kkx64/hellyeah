@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: LeavesDiffusion
   m_EditorClassIdentifier: 
   profile:
-    scatteringDistance: {r: 0.69034094, g: 0.6419732, b: 0.22977023, a: 1}
-    scatteringDistanceMultiplier: 1.85
-    transmissionTint: {r: 1, g: 1, b: 1, a: 1}
+    scatteringDistance: {r: 0.89338607, g: 1, b: 0.4386417, a: 1}
+    scatteringDistanceMultiplier: 10.6
+    transmissionTint: {r: 1.6596152, g: 3.482202, b: 0, a: 1}
     texturingMode: 0
-    smoothnessMultipliers: {x: 1, y: 1}
-    lobeMix: 0.211
-    diffuseShadingPower: 1
+    smoothnessMultipliers: {x: 0.5020747, y: 1.2489626}
+    lobeMix: 0.477
+    diffuseShadingPower: 3
     transmissionMode: 1
-    thicknessRemap: {x: 0, y: 4.999998}
-    worldScale: 1
-    ior: 1.258
+    thicknessRemap: {x: 7.2765074, y: 31.03814}
+    worldScale: 16.77
+    ior: 1.264
     hash: 1079401144
   m_Version: 2

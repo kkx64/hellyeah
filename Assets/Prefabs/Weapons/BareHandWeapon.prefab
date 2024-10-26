@@ -216,12 +216,3 @@ MonoBehaviour:
   punchableLayers:
     serializedVersion: 2
     m_Bits: 1089
-  grapplingPointLayer:
-    serializedVersion: 2
-    m_Bits: 4096
-  grappleDetectionRadius: 11
-  grappleRange: 8
-  preGrappleMoveDistance: 0.3
-  horizontalThrustForce: 800
-  targetPoint: {fileID: 683472423892517429}
-  grappleRiseMultiplier: 0.4
